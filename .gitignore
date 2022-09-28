@@ -127,3 +127,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+/mountainsort4/
+/kilosort3/
+/recording_save/
+/waveforms0/
+/kilosort3 - Shortcut.lnk
