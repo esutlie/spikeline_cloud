@@ -22,7 +22,7 @@ def main():
 
     recording_folder = os.path.join('D:\\', 'Test', 'ES029')
     recording_name = 'ES029_2022-09-14_bot72_0_g0'
-    recording_save = os.path.join('C:\\', 'github', 'spikeline')
+    recording_save = os.path.join('C:\\', 'github', 'spikeline', 'recording_save')
     if load_new:
         recording_save = reset_folder(recording_save)
     # else:
@@ -37,8 +37,8 @@ def main():
     # Load or generate the sorter output
     # sorter_list = ['combinato', 'hdsort', 'herdingspikes', 'ironclust', 'kilosort3', 'kilosort2_5',
     #                'mountainsort4', 'spykingcircus', 'tridesclous', 'waveclus']
-    sorter_list = ['mountainsort4']
-    # sorter_list = ['herdingspikes']
+    # sorter_list = ['mountainsort4']
+    sorter_list = ['herdingspikes']
     sorters = run_spike_sorters(recording_preprocessed, sorter_list, run_new=sort_new)
     tic = ticker(tic, text='sorting')
 

@@ -99,15 +99,19 @@ def run_spike_sorters(recording, sorter_list, run_new=False):
     sorters = {}
     for name in sorter_list:
         try:
-            if os.path.isdir(f'./{name}') and not run_new:
+            save_path = os.path.join('C:\\', 'github', 'spikeline', name)
+            if os.path.isdir(save_path) and not run_new:
                 print(f'Loading {name}...')
-                sorters.update({name: remove_empty_or_one(si.read_sorter_folder(f'./{name}'))})
+                sorters.update({name: remove_empty_or_one(si.read_sorter_folder(save_path))})
             else:
                 print(f'Running {name}...')
-                if os.path.isdir(f'./{name}'):
-                    rmtree(f'./{name}')
-                sorter_params = {"num_workers": 8}
-                sorter = ss.run_sorter(sorter_name=name, recording=recording, output_folder=name, verbose=True,
+                if os.path.isdir(save_path):
+                    rmtree(save_path)
+                if name in ['mountainsort4']:
+                    sorter_params = {"num_workers": 8}
+                else:
+                    sorter_params = {}
+                sorter = ss.run_sorter(sorter_name=name, recording=recording, output_folder=save_path, verbose=True,
                                        **sorter_params)
                 sorters.update({name: remove_empty_or_one(sorter)})
                 print(f'{name} succeeded')
@@ -118,16 +122,16 @@ def run_spike_sorters(recording, sorter_list, run_new=False):
 
 def export_for_phy(sorters, recording, tic=time.time()):
     save_folders = {}
+    waveform_path = os.path.join('C:\\', 'github', 'spikeline', 'waveforms')
     for name, sorter in sorters.items():
         print(f'Extracting waveforms for {name}...')
-        waveforms_folder = reset_folder('waveforms')
+        waveforms_folder = reset_folder(waveform_path)
         waveforms = si.WaveformExtractor.create(recording, sorter, waveforms_folder)
         waveforms.set_params(ms_before=3., ms_after=4., max_spikes_per_unit=500)
         waveforms.run_extract_waveforms(n_jobs=-1, chunk_size=30000)
         tic = ticker(tic, text='waveforms extracted')
 
-        save_folder = f'phy_folder_for_{name}'
-        save_folder = reset_folder(save_folder)
+        save_folder = reset_folder(f'phy_folder_for_{name}')
         local_path = f'./{save_folder}'
         print(f'Exporting waveforms for phy to {save_folder}...')
         sparsity_dict = dict(method="radius", radius_um=50, peak_sign='both')
