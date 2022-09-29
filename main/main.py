@@ -1,24 +1,24 @@
 """
 Neuropixels preprocessing and spike sorting
 """
-
-# os.environ['KILOSORT3_PATH'] = os.path.join('C:\\', 'github', 'Kilosort')
-# os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
-# os.environ['IRONCLUST_PATH'] = os.path.join('C:\\', 'github', 'ironclust')
-# os.environ['HDSORT_PATH'] = os.path.join('C:\\', 'github', 'HDsort')
-# os.environ['WAVECLUS_PATH'] = os.path.join('C:\\', 'github', 'wave_clus')
-# os.environ['COMBINATO_PATH'] = os.path.join('C:\\', 'github', 'combinato')
-# os.environ['TEMPDIR'] = os.path.join('D:\\', 'temp')
-
+import os
 from open_phy import open_phy
 from process_functions import *
+
+os.environ['KILOSORT3_PATH'] = os.path.join('C:\\', 'github', 'Kilosort')
+os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
+os.environ['IRONCLUST_PATH'] = os.path.join('C:\\', 'github', 'ironclust')
+os.environ['HDSORT_PATH'] = os.path.join('C:\\', 'github', 'HDsort')
+os.environ['WAVECLUS_PATH'] = os.path.join('C:\\', 'github', 'wave_clus')
+os.environ['COMBINATO_PATH'] = os.path.join('C:\\', 'github', 'combinato')
+os.environ['TEMPDIR'] = os.path.join('D:\\', 'temp')
 
 
 def main():
     load_new = False
-    sort_new = True
-    phy_export_new = True
-    run_phy = False
+    sort_new = False
+    phy_export_new = False
+    run_phy = True
 
     recording_folder = os.path.join('D:\\', 'Test', 'ES029')
     recording_name = 'ES029_2022-09-14_bot72_0_g0'
@@ -38,7 +38,7 @@ def main():
     # sorter_list = ['combinato', 'hdsort', 'herdingspikes', 'ironclust', 'kilosort3', 'kilosort2_5',
     #                'mountainsort4', 'spykingcircus', 'tridesclous', 'waveclus']
     # sorter_list = ['mountainsort4']
-    sorter_list = ['herdingspikes']
+    sorter_list = ['kilosort3', 'kilosort2_5', 'ironclust', 'herdingspikes']
     sorters = run_spike_sorters(recording_preprocessed, sorter_list, run_new=sort_new)
     tic = ticker(tic, text='sorting')
 

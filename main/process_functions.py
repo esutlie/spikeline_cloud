@@ -27,13 +27,14 @@ def ticker(tic=None, text=''):
     return t
 
 
-def reset_folder(name):
+def reset_folder(name, local=True):
     count = 0
     while True:
         save_folder = name + str(count)
+        folder_path = f'./{save_folder}' if local else save_folder
         try:
-            if os.path.isdir(f'./{save_folder}'):
-                rmtree(f'./{save_folder}')
+            if os.path.isdir(folder_path):
+                rmtree(folder_path)
             break
         except PermissionError:
             count += 1
@@ -122,23 +123,22 @@ def run_spike_sorters(recording, sorter_list, run_new=False):
 
 def export_for_phy(sorters, recording, tic=time.time()):
     save_folders = {}
-    waveform_path = os.path.join('C:\\', 'github', 'spikeline', 'waveforms')
+    current_dir = os.path.dirname(os.getcwd())
     for name, sorter in sorters.items():
         print(f'Extracting waveforms for {name}...')
-        waveforms_folder = reset_folder(waveform_path)
+        waveforms_folder = reset_folder(os.path.join(current_dir, 'waveforms'), local=False)
         waveforms = si.WaveformExtractor.create(recording, sorter, waveforms_folder)
         waveforms.set_params(ms_before=3., ms_after=4., max_spikes_per_unit=500)
         waveforms.run_extract_waveforms(n_jobs=-1, chunk_size=30000)
         tic = ticker(tic, text='waveforms extracted')
-
-        save_folder = reset_folder(f'phy_folder_for_{name}')
-        local_path = f'./{save_folder}'
-        print(f'Exporting waveforms for phy to {save_folder}...')
+        folder_name = f'phy_folder_for_{name}'
+        save_folder = reset_folder(os.path.join(current_dir, folder_name), local=False)
+        print(f'Exporting waveforms for phy to {folder_name}...')
         sparsity_dict = dict(method="radius", radius_um=50, peak_sign='both')
-        export_to_phy(waveforms, local_path, compute_pc_features=False, compute_amplitudes=False, copy_binary=False,
+        export_to_phy(waveforms, save_folder, compute_pc_features=False, compute_amplitudes=False, copy_binary=False,
                       remove_if_exists=True, sparsity_dict=sparsity_dict, max_channels_per_template=None)
         tic = ticker(tic, text='phy export')
-        save_folders.update({name: save_folder})
+        save_folders.update({name: folder_name})
     with open('save_folder_dict', 'wb') as f:
         pickle.dump(save_folders, f, protocol=pickle.HIGHEST_PROTOCOL)
     return save_folders
