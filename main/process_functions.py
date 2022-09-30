@@ -4,6 +4,8 @@ import numpy as np
 import spikeinterface.full as si
 import spikeinterface.sorters as ss
 import spikeinterface.extractors as se
+import spikeinterface.comparison as sc
+import spikeinterface.widgets as sw
 from spikeinterface.exporters import export_to_phy
 from shutil import rmtree
 import pickle
@@ -132,7 +134,7 @@ def export_for_phy(sorters, recording, tic=time.time()):
         waveforms.run_extract_waveforms(n_jobs=-1, chunk_size=30000)
         tic = ticker(tic, text='waveforms extracted')
         folder_name = f'phy_folder_for_{name}'
-        save_folder = reset_folder(os.path.join(current_dir, folder_name), local=False)
+        save_folder = os.path.join(current_dir, folder_name)
         print(f'Exporting waveforms for phy to {folder_name}...')
         sparsity_dict = dict(method="radius", radius_um=50, peak_sign='both')
         export_to_phy(waveforms, save_folder, compute_pc_features=False, compute_amplitudes=False, copy_binary=False,
@@ -155,3 +157,5 @@ def filter_results(sorting, waveforms):
 
     curated_sorting = sorting.select_units(keep_unit_ids)
     return curated_sorting
+
+
