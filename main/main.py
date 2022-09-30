@@ -2,8 +2,11 @@
 Neuropixels preprocessing and spike sorting
 """
 import os
+import matplotlib.pyplot as plt
 from open_phy import open_phy
 from process_functions import *
+import spikeinterface.comparison as sc
+import spikeinterface.widgets as sw
 
 os.environ['KILOSORT3_PATH'] = os.path.join('C:\\', 'github', 'Kilosort')
 os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
@@ -18,8 +21,8 @@ def main():
     load_new = False
     sort_new = False
     phy_export_new = False
-    run_phy = True
-
+    run_phy = False
+    compare_sorters = True
     recording_folder = os.path.join('D:\\', 'Test', 'ES029')
     recording_name = 'ES029_2022-09-14_bot72_0_g0'
     recording_save = os.path.join('C:\\', 'github', 'spikeline', 'recording_save')
@@ -55,11 +58,24 @@ def main():
             open_phy(save_folder)
         tic = ticker(tic, text='manual curation')
 
-    # comp_multi = sc.compare_multiple_sorters(sorting_list=[sorting_ks, sorting_hs], name_list=['ks', 'hs'])
-    # sorting_agreement = comp_multi.get_agreement_sorting(minimum_agreement_count=2)
-    # print('Units in agreement between kilosort and herding_spikes:', sorting_agreement.get_unit_ids())
-    # w_multi = sw.plot_multicomp_graph(comp_multi)
-    # plt.show()
+    if compare_sorters:
+        # comp_TDC_HS = sc.compare_two_sorters(sorting1=sorters['kilosort3'], sorting2=sorters['herdingspikes'])
+        # match12 = comp_TDC_HS.hungarian_match_12
+        # match21 = comp_TDC_HS.hungarian_match_21
+
+        comp_multi = sc.compare_multiple_sorters(sorting_list=list(sorters.values()), name_list=list(sorters.keys()),
+                                                 verbose=True)
+        all_sort = comp_multi.get_agreement_sorting(minimum_agreement_count=1)
+        export_for_phy({f'all_sort1': all_sort}, recording_preprocessed)
+
+        # for i in range(len(sorters)):
+        #     agree_sort = comp_multi.get_agreement_sorting(minimum_agreement_count=i + 1)
+        #     export_for_phy({f'agree_{i + 1}': agree_sort}, recording_preprocessed, tic=tic)
+        #
+        # sorting_agreement = comp_multi.get_agreement_sorting(minimum_agreement_count=2)
+        # print('Units in agreement between kilosort and herding_spikes:', sorting_agreement.get_unit_ids())
+        # w_multi = sw.plot_multicomp_graph(comp_multi)
+        # plt.show()
 
 
 if __name__ == '__main__':
