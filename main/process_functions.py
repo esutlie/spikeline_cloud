@@ -10,6 +10,8 @@ from spikeinterface.exporters import export_to_phy
 from shutil import rmtree
 import pickle
 from dask.diagnostics import ProgressBar
+import upsetplot
+import matplotlib.pyplot as plt
 
 ProgressBar().register()
 
@@ -159,3 +161,9 @@ def filter_results(sorting, waveforms):
     return curated_sorting
 
 
+def make_upset(data, title='Upset Plot'):
+    uniques, counts = np.unique([string.split(', ') for string in data.sorters.values], return_counts=True)
+    noise_upset = upsetplot.from_memberships(uniques, data=counts)
+    axes = upsetplot.plot(noise_upset)
+    plt.suptitle(title)
+    plt.show()

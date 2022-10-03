@@ -7,6 +7,8 @@ from open_phy import open_phy
 from process_functions import *
 import spikeinterface.comparison as sc
 import spikeinterface.widgets as sw
+import pandas as pd
+import seaborn as sns
 
 os.environ['KILOSORT3_PATH'] = os.path.join('C:\\', 'github', 'Kilosort')
 os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
@@ -62,11 +64,41 @@ def main():
         # comp_TDC_HS = sc.compare_two_sorters(sorting1=sorters['kilosort3'], sorting2=sorters['herdingspikes'])
         # match12 = comp_TDC_HS.hungarian_match_12
         # match21 = comp_TDC_HS.hungarian_match_21
+        compare_path = os.path.join(os.path.dirname(os.getcwd()), 'comp_multi')
+        compare_new = False
+        if compare_new:
+            comp_multi = sc.compare_multiple_sorters(sorting_list=list(sorters.values()), name_list=list(sorters.keys()),
+                                                     verbose=True)
+            comp_multi.save_to_folder(compare_path)
+        else:
+            comp_multi = sc.MultiSortingComparison.load_from_folder(compare_path)
 
-        comp_multi = sc.compare_multiple_sorters(sorting_list=list(sorters.values()), name_list=list(sorters.keys()),
-                                                 verbose=True)
+
+        units = comp_multi.units
+        units_df = pd.DataFrame.from_dict(units).transpose()
+        units_df['sorters'] = [', '.join(list(units_df.loc[i].unit_ids.keys())) for i in range(len(units_df))]
+        path = os.path.join('C:\\''github', 'spikeline', 'phy_folder_for_all_sort')
+        cluster_info = pd.read_csv(os.path.join(path, 'cluster_info.tsv'), sep='\t')
+        cluster_info['sorters'] = units_df['sorters']
+        ax = sns.histplot(data=cluster_info, x='sorters', hue='group', multiple="dodge", shrink=.8)
+        plt.xticks(rotation=45)
+        plt.show()
+
+        noise = cluster_info[cluster_info.group == 'noise']
+        mua = cluster_info[cluster_info.group == 'mua']
+        good = cluster_info[cluster_info.group == 'good']
+        make_upset(noise, title='noise')
+        make_upset(mua, title='mua')
+        make_upset(good, title='good')
+        # sw.plot_multicomp_graph(comp_multi)
+        # plt.show()
+        # sw.plot_multicomp_agreement_by_sorter(comp_multi)
+        # plt.show()
+        # sw.plot_multicomp_agreement(comp_multi)
+        # plt.show()
+
         all_sort = comp_multi.get_agreement_sorting(minimum_agreement_count=1)
-        export_for_phy({f'all_sort1': all_sort}, recording_preprocessed)
+        # export_for_phy({f'all_sort1': all_sort}, recording_preprocessed)
 
         # for i in range(len(sorters)):
         #     agree_sort = comp_multi.get_agreement_sorting(minimum_agreement_count=i + 1)
@@ -76,6 +108,7 @@ def main():
         # print('Units in agreement between kilosort and herding_spikes:', sorting_agreement.get_unit_ids())
         # w_multi = sw.plot_multicomp_graph(comp_multi)
         # plt.show()
+        pass
 
 
 if __name__ == '__main__':

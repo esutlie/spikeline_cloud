@@ -11,4 +11,4 @@ def open_phy(save_folder):
 
 
 if __name__ == '__main__':
-    open_phy('C:\github\spikeline\phy_folder_for_all_sort')
+    open_phy('C:\github\spikeline\phy_folder_for_all_sort1')
