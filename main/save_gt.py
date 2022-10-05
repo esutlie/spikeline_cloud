@@ -16,4 +16,4 @@ def save_gt(phy_path, save_path):
 
 
 if __name__ == '__main__':
-    save_gt('phy_folder_for_all_sort', 'ground_truth')
+    save_gt('phy_folder_for_all_sort2', 'ground_truth')

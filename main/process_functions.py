@@ -12,6 +12,7 @@ import pickle
 from dask.diagnostics import ProgressBar
 import upsetplot
 import matplotlib.pyplot as plt
+import pandas as pd
 
 ProgressBar().register()
 
@@ -125,7 +126,7 @@ def run_spike_sorters(recording, sorter_list, run_new=False):
     return sorters
 
 
-def export_for_phy(sorters, recording, tic=time.time()):
+def export_for_phy(sorters, recording, tic=time.time(), filter=False):
     save_folders = {}
     current_dir = os.path.dirname(os.getcwd())
     for name, sorter in sorters.items():
@@ -135,6 +136,16 @@ def export_for_phy(sorters, recording, tic=time.time()):
         waveforms.set_params(ms_before=3., ms_after=4., max_spikes_per_unit=500)
         waveforms.run_extract_waveforms(n_jobs=-1, chunk_size=30000)
         tic = ticker(tic, text='waveforms extracted')
+        if filter:
+            print(f'Filtering units for {name}...')
+            sorter = filter_results(sorter, waveforms)
+            tic = ticker(tic, text='units filtered')
+            print(f'Extracting waveforms for filtered {name}...')
+            waveforms_folder = reset_folder(os.path.join(current_dir, 'waveforms'), local=False)
+            waveforms = si.WaveformExtractor.create(recording, sorter, waveforms_folder)
+            waveforms.set_params(ms_before=3., ms_after=4., max_spikes_per_unit=500)
+            waveforms.run_extract_waveforms(n_jobs=-1, chunk_size=30000)
+            tic = ticker(tic, text='waveforms extracted')
         folder_name = f'phy_folder_for_{name}'
         save_folder = os.path.join(current_dir, folder_name)
         print(f'Exporting waveforms for phy to {folder_name}...')
@@ -161,9 +172,24 @@ def filter_results(sorting, waveforms):
     return curated_sorting
 
 
+def visualize_comparison(comp_multi):
+    units = comp_multi.units
+    units_df = pd.DataFrame.from_dict(units).transpose()
+    units_df['sorters'] = [', '.join(list(units_df.loc[i].unit_ids.keys())) for i in range(len(units_df))]
+    path = os.path.join('C:\\''github', 'spikeline', 'phy_folder_for_all_sort')
+    cluster_info = pd.read_csv(os.path.join(path, 'cluster_info.tsv'), sep='\t')
+    cluster_info['sorters'] = units_df['sorters']
+    noise = cluster_info[cluster_info.group == 'noise']
+    mua = cluster_info[cluster_info.group == 'mua']
+    good = cluster_info[cluster_info.group == 'good']
+    make_upset(noise, title='noise')
+    make_upset(mua, title='mua')
+    make_upset(good, title='good')
+
+
 def make_upset(data, title='Upset Plot'):
     uniques, counts = np.unique([string.split(', ') for string in data.sorters.values], return_counts=True)
     noise_upset = upsetplot.from_memberships(uniques, data=counts)
-    axes = upsetplot.plot(noise_upset)
+    upsetplot.plot(noise_upset)
     plt.suptitle(title)
     plt.show()

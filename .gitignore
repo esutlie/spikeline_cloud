@@ -131,17 +131,13 @@ dmypy.json
 /mountainsort4/
 /kilosort3/
 /recording_save/
-/waveforms0/
+/waveforms*
 /kilosort3 - Shortcut.lnk
-/phy_folder_for_herdingspikes0/
 /herdingspikes/
 /tridesclous/
 /spykingcircus/
 /ironclust/
 /kilosort2_5/
-/phy_folder_for_kilosort30/
-/phy_folder_for_ironclust0/
-/phy_folder_for_kilosort2_50/
-/phy_folder_for_agree_40/
-/phy_folder_for_all_sort/
 /phy_folder*
+/comp_multi*
+/ground_truth*
