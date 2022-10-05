@@ -50,9 +50,8 @@ def main():
 
     # Test ground truth
     if test_truth:
-        gt_path = os.path.join('C:\\','github','spikeline','ground_truth')
+        gt_path = os.path.join('C:\\', 'github', 'spikeline', 'ground_truth')
         gt_sorter = si.read_sorter_folder(gt_path)
-
 
     # Export the sorter output to a phy folder for manual curation
     if phy_export_new:
