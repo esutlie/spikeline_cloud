@@ -28,29 +28,24 @@ def main():
     test_truth = True
     recording_folder = os.path.join('D:\\', 'Test', 'ES029')
     recording_name = 'ES029_2022-09-14_bot72_0_g0'
-    recording_save = os.path.join('C:\\', 'github', 'spikeline', 'recording_save')
+    project_dir = os.path.dirname(os.getcwd())
+    recording_save = os.path.join(project_dir, 'recording_save')
     if load_new:
         recording_save = reset_folder(recording_save)
-    # else:
-    #     recording_save = recording_save + '0'
     tic = ticker()
 
     # Load or generate the preprocessed data
-
     recording_preprocessed = get_recording(recording_folder, recording_name, recording_save, load_new=load_new)
     tic = ticker(tic, text='loading recording')
 
     # Load or generate the sorter output
-    # sorter_list = ['combinato', 'hdsort', 'herdingspikes', 'ironclust', 'kilosort3', 'kilosort2_5',
-    #                'mountainsort4', 'spykingcircus', 'tridesclous', 'waveclus']
-    # sorter_list = ['mountainsort4']
     sorter_list = ['kilosort3', 'kilosort2_5', 'ironclust', 'herdingspikes']
     sorters = run_spike_sorters(recording_preprocessed, sorter_list, run_new=sort_new)
     tic = ticker(tic, text='sorting')
 
     # Test ground truth
     if test_truth:
-        gt_path = os.path.join('C:\\', 'github', 'spikeline', 'ground_truth')
+        gt_path = os.path.join(project_dir, 'ground_truth')
         gt_sorter = si.read_sorter_folder(gt_path)
 
     # Export the sorter output to a phy folder for manual curation

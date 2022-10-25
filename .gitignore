@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 /mountainsort4/
-/kilosort3/
+/kilosort*
 /recording_save/
 /waveforms*
 /kilosort3 - Shortcut.lnk
@@ -141,3 +141,7 @@ dmypy.json
 /phy_folder*
 /comp_multi*
 /ground_truth*
+/kilosort3_mua/
+/gt*
+/ES*
+/batch*

@@ -13,6 +13,8 @@ from dask.diagnostics import ProgressBar
 import upsetplot
 import matplotlib.pyplot as plt
 import pandas as pd
+import json
+from pkg_resources import resource_string, resource_filename
 
 ProgressBar().register()
 
@@ -87,7 +89,7 @@ def process_recording(recording_path, temp_path):
 
     recording_cmr = recording
     recording_f = si.bandpass_filter(recording, freq_min=300, freq_max=6000)
-    recording_cmr = si.common_reference(recording_f, reference='local', operator='median')
+    recording_cmr = si.common_reference(recording_f, reference='local', operator='median', local_radius=(30, 200))
     # w_ts = sw.plot_timeseries(recording_cmr, time_range=(60, 60.1),
     #                           channel_ids=recording_cmr.channel_ids[:5])
     # w_ts.ax.set_title('after processing')
@@ -101,28 +103,37 @@ def process_recording(recording_path, temp_path):
     return recording_preprocessed
 
 
-def run_spike_sorters(recording, sorter_list, run_new=False):
+def run_spike_sorters(recording, sorter_list, run_new=False, keep_mua3=True, keep_mua2_5=True):
     sorters = {}
     for name in sorter_list:
+        save_name = name
+        if name in ['mountainsort4']:
+            sorter_params = {"num_workers": 8}
+        elif name == 'kilosort3':
+            sorter_params = {"keep_good_only": not keep_mua3}
+            if keep_mua3:
+                save_name = 'kilosort3_mua'
+        elif name == 'kilosort2_5':
+            sorter_params = {"keep_good_only": not keep_mua2_5}
+            if keep_mua2_5:
+                save_name = 'kilosort2_5_mua'
+        else:
+            sorter_params = {}
         try:
-            save_path = os.path.join('C:\\', 'github', 'spikeline', name)
+            save_path = os.path.join('C:\\', 'github', 'spikeline', save_name)
             if os.path.isdir(save_path) and not run_new:
-                print(f'Loading {name}...')
-                sorters.update({name: remove_empty_or_one(si.read_sorter_folder(save_path))})
+                print(f'Loading {save_name}...')
+                sorters.update({save_name: remove_empty_or_one(si.read_sorter_folder(save_path))})
             else:
-                print(f'Running {name}...')
+                print(f'Running {save_name}...')
                 if os.path.isdir(save_path):
                     rmtree(save_path)
-                if name in ['mountainsort4']:
-                    sorter_params = {"num_workers": 8}
-                else:
-                    sorter_params = {}
-                sorter = ss.run_sorter(sorter_name=name, recording=recording, output_folder=save_path, verbose=True,
+                sorter = ss.run_sorter(sorter_name=name, recording=recording, output_folder=save_path, verbose=False,
                                        **sorter_params)
-                sorters.update({name: remove_empty_or_one(sorter)})
-                print(f'{name} succeeded')
+                sorters.update({save_name: remove_empty_or_one(sorter)})
+                print(f'{save_name} succeeded')
         except Exception as e:
-            print(f'{name} failed with exception:\n{e}')
+            print(f'{save_name} failed with exception:\n{e}')
     return sorters
 
 
@@ -147,7 +158,7 @@ def export_for_phy(sorters, recording, tic=time.time(), filter=False):
             waveforms.run_extract_waveforms(n_jobs=-1, chunk_size=30000)
             tic = ticker(tic, text='waveforms extracted')
         folder_name = f'phy_folder_for_{name}'
-        save_folder = os.path.join(current_dir, folder_name)
+        save_folder = os.path.join(current_dir, 'phy_folders', folder_name)
         print(f'Exporting waveforms for phy to {folder_name}...')
         sparsity_dict = dict(method="radius", radius_um=50, peak_sign='both')
         export_to_phy(waveforms, save_folder, compute_pc_features=False, compute_amplitudes=False, copy_binary=False,
@@ -159,16 +170,18 @@ def export_for_phy(sorters, recording, tic=time.time(), filter=False):
     return save_folders
 
 
-def filter_results(sorting, waveforms):
+def filter_results(sorter, waveforms=None, tic=time.time(), isi_violations_ratio=2, snr=20,
+                   amplitude_cutoff=.1):
+    print(f'Filtering sort...')
     metrics = si.compute_quality_metrics(waveforms, metric_names=['snr', 'isi_violation', 'amplitude_cutoff'])
 
-    keep_mask = (metrics['snr'] > 7.5) & (metrics['isi_violations_rate'] < 0.01)
-    print(keep_mask)
+    keep_mask = (metrics['snr'] < snr) & \
+                (metrics['isi_violations_ratio'] < isi_violations_ratio) & \
+                (metrics['amplitude_cutoff'] < amplitude_cutoff)
 
     keep_unit_ids = keep_mask[keep_mask].index.values
-    print(keep_unit_ids)
-
-    curated_sorting = sorting.select_units(keep_unit_ids)
+    curated_sorting = sorter.select_units(keep_unit_ids)
+    tic = ticker(tic, text='sorting filtered')
     return curated_sorting
 
 
@@ -193,3 +206,14 @@ def make_upset(data, title='Upset Plot'):
     upsetplot.plot(noise_upset)
     plt.suptitle(title)
     plt.show()
+
+
+def get_settings():
+    with open('settings.json', 'r') as openfile:
+        return json.load(openfile)
+
+
+def save_settings(dict):
+    json_object = json.dumps(dict, indent=4)
+    with open("settings.json", "w") as outfile:
+        outfile.write(json_object)
