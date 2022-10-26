@@ -208,12 +208,18 @@ def make_upset(data, title='Upset Plot'):
     plt.show()
 
 
-def get_settings():
-    with open('settings.json', 'r') as openfile:
-        return json.load(openfile)
+def get_sorting_record():
+    if os.path.exists('sorting_record.json'):
+        with open('sorting_record.json', 'r') as openfile:
+            return json.load(openfile)
+    else:
+        sorting_record = {"sorting_complete": [],
+                          "curation_complete": [],
+                          "exclude": []}
+        save_sorting_record(sorting_record)
 
 
-def save_settings(dict):
+def save_sorting_record(dict):
     json_object = json.dumps(dict, indent=4)
-    with open("settings.json", "w") as outfile:
+    with open("sorting_record.json", "w") as outfile:
         outfile.write(json_object)

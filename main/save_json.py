@@ -5,7 +5,7 @@ from pkg_resources import resource_string, resource_filename
 def save_json():
     json_dict = {'sorting_complete': [], 'curation_complete': []}
     json_object = json.dumps(json_dict, indent=4)
-    with open("settings.json", "w") as outfile:
+    with open("sorting_record.json", "w") as outfile:
         outfile.write(json_object)
 
 
