@@ -20,11 +20,27 @@ Requirements
 * Kilosort 2.5 (https://github.com/MouseLand/Kilosort/releases/tag/v2.5)
 * Kilosort 3 (https://github.com/MouseLand/Kilosort)
 
+Follow install and requirements instructions from the Spike Interface and Kilosort Readme files.
+
 Clone the repo
    ```sh
    git clone https://github.com/esutlie/spikeline.git
    ```
 
+Change directories to point to your installations of Kilosort 2.5 and Kilosort3
+
+  ```sh
+  os.environ['KILOSORT3_PATH'] = os.path.join('PATH', 'TO', 'Kilosort3')
+  os.environ['KILOSORT2_5_PATH'] = os.path.join('PATH', 'TO', 'Kilosort2_5')
+  ```
+Change ```path``` variable to point to the folder containing your recording data
+
+  ```sh
+  if __name__ == '__main__':
+      path = os.path.join('PATH', 'TO', 'RECORDINGS')
+      batch_sort(path)
+      delete_completed()
+  ```
 
 <!-- LICENSE -->
 ## License
