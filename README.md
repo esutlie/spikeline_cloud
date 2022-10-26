@@ -27,7 +27,7 @@ Clone the repo
    git clone https://github.com/esutlie/spikeline.git
    ```
 
-Change directories to point to your installations of Kilosort 2.5 and Kilosort3
+Change the directories to point to your installations of Kilosort 2.5 and Kilosort3
 
   ```sh
   os.environ['KILOSORT3_PATH'] = os.path.join('PATH', 'TO', 'Kilosort3')
