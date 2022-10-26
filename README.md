@@ -53,7 +53,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Elissa Sutlief - elissasutlief@gmail.com
 
-Project Link: [https://github.com/esutlie/behavior_code](https://github.com/esutlie/behavior_code)
+Project Link: [https://github.com/esutlie/spikeline](https://github.com/esutlie/spikeline)
 
 
 <!-- ACKNOWLEDGMENTS -->
