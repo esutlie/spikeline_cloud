@@ -217,9 +217,10 @@ def get_sorting_record():
                           "curation_complete": [],
                           "exclude": []}
         save_sorting_record(sorting_record)
+        return sorting_record
 
 
-def save_sorting_record(dict):
-    json_object = json.dumps(dict, indent=4)
+def save_sorting_record(d):
+    json_object = json.dumps(d, indent=4)
     with open("sorting_record.json", "w") as outfile:
         outfile.write(json_object)
