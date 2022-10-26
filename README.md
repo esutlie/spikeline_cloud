@@ -39,7 +39,6 @@ Change the ```path``` variable to point to the folder containing your recording 
   if __name__ == '__main__':
       path = os.path.join('PATH', 'TO', 'RECORDINGS')
       batch_sort(path)
-      delete_completed()
   ```
 
 <!-- LICENSE -->
