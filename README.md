@@ -15,6 +15,11 @@ This is the postprocessing pipeline used by the Shuler lab to extract spike time
 <!-- GETTING STARTED -->
 ## Installation
 
+Requirements
+* Spike Interface (https://github.com/SpikeInterface)
+* Kilosort 2.5 (https://github.com/MouseLand/Kilosort/releases/tag/v2.5)
+* Kilosort 3 (https://github.com/MouseLand/Kilosort)
+
 Clone the repo
    ```sh
    git clone https://github.com/esutlie/spikeline.git
@@ -40,5 +45,6 @@ Project Link: [https://github.com/esutlie/behavior_code](https://github.com/esut
 ## Acknowledgments
 
 * [https://github.com/SpikeInterface](https://github.com/SpikeInterface)
+* [https://github.com/MouseLand/Kilosort](https://github.com/MouseLand/Kilosort)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
