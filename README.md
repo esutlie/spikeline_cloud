@@ -33,7 +33,7 @@ Change directories to point to your installations of Kilosort 2.5 and Kilosort3
   os.environ['KILOSORT3_PATH'] = os.path.join('PATH', 'TO', 'Kilosort3')
   os.environ['KILOSORT2_5_PATH'] = os.path.join('PATH', 'TO', 'Kilosort2_5')
   ```
-Change ```path``` variable to point to the folder containing your recording data
+Change the ```path``` variable to point to the folder containing your recording data
 
   ```sh
   if __name__ == '__main__':
