@@ -13,22 +13,17 @@ os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
 
 def run_sort(file_path):
     recording_save = os.path.join('C:\\', 'github', 'spikeline', f'{os.path.basename(file_path)}_recording_save')
-    tic = ticker()
     recording_preprocessed = get_recording(os.path.dirname(file_path), os.path.basename(file_path), recording_save,
                                            load_new=True)
-    tic = ticker(tic, text='loading recording')
     sorter_list = ['kilosort3', 'kilosort2_5']
     sorters = run_spike_sorters(recording_preprocessed, sorter_list, run_new=True, keep_mua3=False)
-    tic = ticker(tic, text='sorting')
     consensus = sc.compare_multiple_sorters(sorting_list=list(sorters.values()),
                                             name_list=list(sorters.keys()), verbose=False,
                                             delta_time=.2,
                                             match_score=.3,
                                             spiketrain_mode='union')
     consensus = consensus.get_agreement_sorting(minimum_agreement_count=2)
-    tic = ticker(tic, text='metrics calculated')
     export_for_phy({f'{os.path.basename(file_path)}': consensus}, recording_preprocessed, filter=False)
-    tic = ticker(tic, text=f'{os.path.basename(file_path)} exported to phy')
 
 
 def batch_sort(folder_path):
