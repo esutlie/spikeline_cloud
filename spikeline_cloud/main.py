@@ -7,13 +7,18 @@ from google.cloud import storage
 
 storage_client = storage.Client()
 
-# FOLDER_NAME = os.getenv("FOLDER_NAME", 0)
+FOLDER_NAME = os.getenv("FOLDER_NAME", 0)
 
 def cloud_sort(path):
     kilosort3_folder = os.path.join(os.getcwd(), 'kilosort3')
     kilosort2_5_folder = os.path.join(os.getcwd(), 'kilosort2_5')
     waveforms_folder = os.path.join(os.getcwd(), 'waveforms')
     phy_folder = os.path.join(path, 'phy_export')
+
+    os.system('gsutil cp -r gs://my data /src/local_data')
+
+    bucket = storage_client.get_bucket(YOUR_BUCKET_NAME)
+
 
     recording = se.read_spikeglx(path, stream_id='imec0.ap')
 
