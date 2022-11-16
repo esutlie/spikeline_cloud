@@ -6,6 +6,9 @@ import spikeinterface.comparison as sc
 from os import walk
 import psutil
 import shutil
+import seaborn as sns
+
+set2 = sns.color_palette(palette='Set2')
 
 os.environ['KILOSORT3_PATH'] = os.path.join('C:\\', 'github', 'Kilosort')
 os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
@@ -23,18 +26,36 @@ def run_sort(file_path):
                                             match_score=.3,
                                             spiketrain_mode='union')
     consensus = consensus.get_agreement_sorting(minimum_agreement_count=2)
-    export_for_phy({f'{os.path.basename(file_path)}': consensus}, recording_preprocessed, filter=False)
+    root = os.path.dirname(os.getcwd())
+    # cluster_info = {}
+    template_dict = {}
+    for sorter in sorters.keys():
+        templates = np.load(os.path.join(root, sorter, 'templates.npy'))
+        template_dict.update({sorter: templates})
+        # channel_positions = np.load(os.path.join(root, sorter, 'channel_positions.npy'))
+        # best_channels = np.argmax(np.max(np.abs(templates), axis=1), axis=1)
+        # cluster_group = pd.read_csv(os.path.join(root, sorter, 'cluster_group.tsv'), sep='\t')
+        # cluster_group['x_loc'] = channel_positions[best_channels][:, 0]
+        # cluster_group['y_loc'] = channel_positions[best_channels][:, 1]
+        # cluster_info.update({sorter: cluster_group.copy()})
+
+    template = np.concatenate(
+        [np.concatenate([template_dict[sorter][:, :, int(unit[sorter])] for sorter in sorters.keys()]) for unit in
+         consensus._properties['unit_ids']])
+
+    save_folder = export_for_phy({f'{os.path.basename(file_path)}': consensus}, recording_preprocessed, filter=False)
+    np.save(os.path.join(save_folder, 'consensus_templates.npy'), template)
 
 
 def batch_sort(folder_path):
-    sort = True
+    sort = False
     curate = True
 
     sorting_record = get_sorting_record()
     for root, dirs, filenames in walk(folder_path):
         num_files = len(dirs)
         times = []
-        for i, name in enumerate(dirs[::-1]):
+        for i, name in enumerate(dirs):
             file_path = os.path.join(root, name)
             if name not in sorting_record['exclude']:
                 if name not in sorting_record['sorting_complete'] and sort:
