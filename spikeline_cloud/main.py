@@ -1,6 +1,7 @@
 import os
 import json
 import glob
+import psutil
 import traceback
 import subprocess
 import numpy as np
@@ -68,7 +69,8 @@ def cloud_sort(use_docker=False):
             waveforms_folder = os.path.join(os.getcwd(), 'waveforms')
             phy_folder = os.path.join(os.getcwd(), 'phy_export')
             recording_save = os.path.join(os.getcwd(), 'recording_save')
-
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
             for b in input_bucket.list_blobs(prefix=folder):
                 b_path = os.path.normpath(b.name).split(os.path.sep)
                 b_path = os.path.join(data_path, *b_path)
@@ -76,6 +78,8 @@ def cloud_sort(use_docker=False):
                     os.makedirs(os.path.dirname(b_path))
                 b.download_to_filename(b_path)
             log.info(f'downloaded files from {folder}')
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
 
             recording_path = os.path.join(data_path, folder, folder + '_imec0')
             log.info(f'specified recording save path: {recording_path}')
@@ -92,18 +96,24 @@ def cloud_sort(use_docker=False):
             log.info(f'applying filters...')
             recording = recording_cmr.save(format='binary', folder=recording_save, **kwargs)
             log.info(f'filters applied')
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
 
             sorter_params = {"keep_good_only": True}
             # ks3_sorter = si.read_sorter_folder(kilosort3_folder)
             log.info(f'starting kilosort3...')
             ks3_sorter = ss.run_sorter(sorter_name='kilosort3', recording=recording, output_folder=kilosort3_folder,
                                        verbose=False, docker_image=use_docker, **sorter_params)
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
             sorter_params = {"keep_good_only": False}
             # ks2_5_sorter = si.read_sorter_folder(kilosort2_5_folder)
             log.info(f'starting kilosort2_5...')
             ks2_5_sorter = ss.run_sorter(sorter_name='kilosort2_5', recording=recording,
                                          output_folder=kilosort2_5_folder,
                                          verbose=False, docker_image=use_docker, **sorter_params)
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
 
             log.info(f'starting consensus...')
             consensus = sc.compare_multiple_sorters(sorting_list=[ks3_sorter, ks2_5_sorter],
@@ -127,6 +137,9 @@ def cloud_sort(use_docker=False):
             waveforms = si.WaveformExtractor.create(recording, consensus, waveforms_folder)
             waveforms.set_params(ms_before=3., ms_after=4., max_spikes_per_unit=500)
             waveforms.run_extract_waveforms(n_jobs=n_jobs, chunk_size=30000)
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
+
             sparsity_dict = dict(method="radius", radius_um=50, peak_sign='both')
             log.info(f'got waveforms')
             log.info(f'starting phy export')
@@ -136,6 +149,8 @@ def cloud_sort(use_docker=False):
                           remove_if_exists=True, sparsity_dict=sparsity_dict, max_channels_per_template=None,
                           **job_kwargs)
             log.info(f'finished phy export')
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
 
             # try:
             #     export_to_phy(waveforms, phy_folder, compute_pc_features=True, compute_amplitudes=True,
@@ -187,6 +202,8 @@ def cloud_sort(use_docker=False):
             rmtree(kilosort2_5_folder)
             rmtree(waveforms_folder)
             rmtree(recording_save)
+            hdd = psutil.disk_usage('/')
+            log.info(f'remaining disk: {hdd.free / (2 ** 30)} GiB')
 
 
 def delete():
