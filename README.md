@@ -1,4 +1,4 @@
-<h3 align="center">spikeline</h3>
+<h3 align="center">spikeline_cloud</h3>
   <p align="center">
     Spike sorting pipeline for generating consensus units from neuropixel recordings. Much of this repo has been moved to https://github.com/esutlie/data_transfer as part of a holistic post-processing pipeline. Please reference that repo.
 
@@ -24,7 +24,7 @@ Follow install and requirements instructions from the Spike Interface and Kiloso
 
 Clone the repo
    ```sh
-   git clone https://github.com/esutlie/spikeline.git
+   git clone https://github.com/esutlie/spikeline_cloud.git
    ```
 
 Change the directories to point to your installations of Kilosort 2.5 and Kilosort3
@@ -53,7 +53,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 Elissa Sutlief - elissasutlief@gmail.com
 
-Project Link: [https://github.com/esutlie/spikeline](https://github.com/esutlie/spikeline)
+Project Link: [https://github.com/esutlie/spikeline_cloud](https://github.com/esutlie/spikeline_cloud)
 
 
 <!-- ACKNOWLEDGMENTS -->
