@@ -1,6 +1,6 @@
 <h3 align="center">spikeline</h3>
   <p align="center">
-    Spike sorting pipeline for generating consensus units from neuropixel recordings.
+    Spike sorting pipeline for generating consensus units from neuropixel recordings. Much of this repo has been moved to https://github.com/esutlie/data_transfer as part of a holistic post-processing pipeline. Please reference that repo.
 
   </p>
 </div>
