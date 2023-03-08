@@ -69,5 +69,5 @@ def open_phy(save_folder):
 
 
 if __name__ == '__main__':
-    curate_from_cloud(new=False)
-    # open_phy('C:\github\spikeline\phy_folders\phy_folder_for_ES029_2022-09-15_bot96_1_g0')
+    # curate_from_cloud(new=False)
+    open_phy('C:\github\spikeline\phy_folders\phy_folder_for_ES029_2022-09-15_bot96_1_g0')

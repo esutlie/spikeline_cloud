@@ -6,9 +6,7 @@ import spikeinterface.comparison as sc
 from os import walk
 import psutil
 import shutil
-import seaborn as sns
 
-set2 = sns.color_palette(palette='Set2')
 
 os.environ['KILOSORT3_PATH'] = os.path.join('C:\\', 'github', 'Kilosort')
 os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
@@ -26,6 +24,7 @@ def run_sort(file_path):
                                             match_score=.3,
                                             spiketrain_mode='union')
     consensus = consensus.get_agreement_sorting(minimum_agreement_count=2)
+
     root = os.path.dirname(os.getcwd())
     # cluster_info = {}
     template_dict = {}
@@ -48,8 +47,8 @@ def run_sort(file_path):
 
 
 def batch_sort(folder_path):
-    sort = False
-    curate = True
+    sort = True
+    curate = False
 
     sorting_record = get_sorting_record()
     for root, dirs, filenames in walk(folder_path):
@@ -100,6 +99,6 @@ def delete_completed():  # Clear space by removing recording saves for sessions 
 
 
 if __name__ == '__main__':
-    path = os.path.join('D:\\', 'Test', 'ES029')
+    path = os.path.join('D:\\', 'Test', 'ES030')
     batch_sort(path)
-    delete_completed()
+    # delete_completed()

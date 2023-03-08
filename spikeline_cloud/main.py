@@ -67,6 +67,7 @@ def cloud_sort(use_docker=False):
             kilosort3_folder = os.path.join(os.getcwd(), 'kilosort3')
             kilosort2_5_folder = os.path.join(os.getcwd(), 'kilosort2_5')
             waveforms_folder = os.path.join(os.getcwd(), 'waveforms')
+            consensus_folder = os.path.join(os.getcwd(), 'consensus')
             phy_folder = os.path.join(os.getcwd(), 'phy_export')
             recording_save = os.path.join(os.getcwd(), 'recording_save')
             hdd = psutil.disk_usage('/')
@@ -133,6 +134,7 @@ def cloud_sort(use_docker=False):
 
             consensus = consensus.select_units(consensus.unit_ids[np.where(template_similarty < .9)[0]])
             log.info(f'trimmed with template matching')
+            consensus = consensus.save(folder=consensus_folder)
 
             waveforms = si.WaveformExtractor.create(recording, consensus, waveforms_folder)
             waveforms.set_params(ms_before=3., ms_after=4., max_spikes_per_unit=500)
@@ -145,7 +147,7 @@ def cloud_sort(use_docker=False):
             log.info(f'starting phy export')
             job_kwargs = {'n_jobs': n_jobs, 'total_memory': '8G'}
             # job_kwargs = {'n_jobs': n_jobs}
-            export_to_phy(waveforms, phy_folder, compute_pc_features=True, compute_amplitudes=False, copy_binary=True,
+            export_to_phy(waveforms, phy_folder, compute_pc_features=True, compute_amplitudes=True, copy_binary=True,
                           remove_if_exists=True, sparsity_dict=sparsity_dict, max_channels_per_template=None,
                           **job_kwargs)
             log.info(f'finished phy export')

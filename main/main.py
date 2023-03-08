@@ -8,7 +8,7 @@ from process_functions import *
 import spikeinterface.comparison as sc
 import spikeinterface.widgets as sw
 import pandas as pd
-import seaborn as sns
+# import seaborn as sns
 
 os.environ['KILOSORT3_PATH'] = os.path.join('C:\\', 'github', 'Kilosort')
 os.environ['KILOSORT2_5_PATH'] = os.path.join('C:\\', 'github', 'Kilosort2_5')
